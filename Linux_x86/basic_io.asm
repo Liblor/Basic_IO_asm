@@ -8,7 +8,7 @@ sys_write   equ   4
 %ifndef BASIC_IO
   %define BASIC_IO
     print_string:
-        xor edx, edx
+        mov edx, -1
       .loop: 
         inc edx
         cmp BYTE [ecx+edx], 0

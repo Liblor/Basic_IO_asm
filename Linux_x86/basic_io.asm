@@ -1,16 +1,22 @@
+stdin       equ   0
+stdout      equ   1
+stderr      equ   2
+sys_exit    equ   1
+sys_read    equ   3
+sys_write   equ   4 
+
 %ifndef BASIC_IO
   %define BASIC_IO
     print_string:
         xor edx, edx
       .loop: 
         inc edx
-        cmp BYTE [eax+edx], 0
+        cmp BYTE [ecx+edx], 0
         jne .loop
 
-        mov ecx, eax
-        mov eax, 4
         push ebx    ; callee save
-        mov ebx, 1
+        mov eax, sys_write
+        mov ebx, stdout
         int 0x80
         pop ebx
         ret
@@ -21,6 +27,7 @@
         sub esp, 12   ; 2^32, 10 digits + \0
         push ebx      ; callee save
         mov BYTE [esp+15], 0x0
+        mov eax, ecx
         mov ebx, 0x0a
         mov ecx, 0xf
       .loop:
@@ -31,7 +38,7 @@
         mov BYTE [esp+ecx], dl
         test eax, eax
         jne .loop
-        lea eax, [esp+ecx]
+        lea ecx, [esp+ecx]
         call print_string
         add esp, 12
         pop ebx
@@ -39,16 +46,16 @@
         ret
 
     print_int:
-        test eax, eax
+        test ecx, ecx
         jns .pos
-        push eax
+        push ecx
         push 0x2D       ; ASCII: -
-        lea eax, [esp]
+        lea ecx, [esp]
         call print_string
         add esp, 4      ; remove 0x2D from stack
-        pop eax
-        xor eax, 0xffffffff
-        inc eax
+        pop ecx
+        xor ecx, 0xffffffff
+        inc ecx
       .pos:
         call print_uint
         ret

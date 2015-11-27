@@ -7,6 +7,9 @@ sys_write   equ   4
 
 %ifndef BASIC_IO
   %define BASIC_IO
+section .bss
+    dummy resb 1
+section .text
     print_string:
         mov edx, -1
       .loop: 
@@ -29,7 +32,7 @@ sys_write   equ   4
         mov BYTE [esp+15], 0x0
         mov eax, ecx
         mov ebx, 0x0a
-        mov ecx, 0xf
+        mov ecx, 0x0f
       .loop:
         dec ecx
         xor edx, edx
@@ -58,5 +61,33 @@ sys_write   equ   4
         inc ecx
       .pos:
         call print_uint
+        ret
+
+    read_string:
+        push ebx
+        mov eax, sys_read
+        mov ebx, stdin
+        int 0x80
+        cmp eax, edx      ; compares len written with size of buffer
+        jl  .lower
+        cmp BYTE [ecx + edx - 1], 0x0a  ; EOL
+        mov BYTE [ecx + edx - 1], 0x00
+        je .null_terminated
+        call clear_stdin
+        jmp .null_terminated
+      .lower:
+        mov BYTE [ecx+eax-1], 0x00    ; \n => \0
+      .null_terminated:
+        pop ebx
+        ret
+
+    clear_stdin:
+        mov eax, sys_read
+        mov ebx, stdin
+        mov ecx, dummy
+        mov edx, 1
+        int 0x80
+        cmp BYTE [ecx], 0xa
+        jne clear_stdin
         ret
 %endif

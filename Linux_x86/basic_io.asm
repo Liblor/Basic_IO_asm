@@ -52,10 +52,10 @@ section .text
         test ecx, ecx
         jns .pos
         push ecx
-        push 0x2D       ; ASCII: -
-        lea ecx, [esp]
+        push 0x2d       ; ASCII: -
+        mov ecx, esp
         call print_string
-        add esp, 4      ; remove 0x2D from stack
+        add esp, 4      ; remove 0x2d from stack
         pop ecx
         xor ecx, 0xffffffff
         inc ecx

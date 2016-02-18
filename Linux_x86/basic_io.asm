@@ -20,6 +20,34 @@ section .text
         dec eax
         ret
 
+    atoi:
+        push ebp
+        mov ebp, esp
+        xor esi, esi
+        xor eax, eax
+        xor edx, edx
+        mov dl, BYTE [ecx]
+        cmp dl, 0x2d    ; -
+        jne .read
+        inc ecx
+        inc esi         ; negative
+      .read:
+        mov dl, BYTE [ecx]
+        inc ecx
+        test dl, dl
+        jz .end
+        imul eax, 10
+        sub dl, 0x30
+        add eax, edx
+        jmp .read
+      .end:
+        test esi, esi
+        jz .positive
+        imul eax, -1
+      .positive:
+        leave
+        ret
+
     print_string:
         mov edx, -1
       .loop: 
@@ -78,7 +106,7 @@ section .text
         mov eax, sys_read
         mov ebx, stdin
         int 0x80
-        cmp eax, edx      ; compares the size of input with the size of buffer
+        cmp eax, edx      ; compares the size of input with the size of the buffer
         jl  .lower
         cmp BYTE [ecx + edx - 1], 0x0a  ; EOL
         mov BYTE [ecx + edx - 1], 0x00

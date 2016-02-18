@@ -118,6 +118,19 @@ section .text
         pop ebx
         ret
 
+    read_int:
+        push ebp
+        mov ebp, esp
+
+        sub esp, 12   ; 2^32, 10 digits + \0
+        mov ecx, esp
+        mov edx, 12
+        call read_string
+        call atoi
+
+        leave
+        ret
+
     clear_stdin:
         mov eax, sys_read
         mov ebx, stdin

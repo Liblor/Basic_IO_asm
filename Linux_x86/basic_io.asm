@@ -21,8 +21,6 @@ section .text
         ret
 
     atoi:
-        push ebp
-        mov ebp, esp
         xor esi, esi
         xor eax, eax
         xor edx, edx
@@ -45,7 +43,6 @@ section .text
         jz .positive
         imul eax, -1
       .positive:
-        leave
         ret
 
     print_string:

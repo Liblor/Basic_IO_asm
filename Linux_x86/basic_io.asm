@@ -10,6 +10,16 @@ sys_write   equ   4
 section .bss
     dummy resb 1
 section .text
+    strlen:
+        xor eax, eax
+      .do:
+        mov dl, BYTE [ecx+eax]
+        inc eax
+        test dl, dl
+        jnz .do
+        dec eax
+        ret
+
     print_string:
         mov edx, -1
       .loop: 
@@ -68,12 +78,14 @@ section .text
         mov eax, sys_read
         mov ebx, stdin
         int 0x80
-        cmp eax, edx      ; compares len written with size of buffer
+        cmp eax, edx      ; compares the size of input with the size of buffer
         jl  .lower
         cmp BYTE [ecx + edx - 1], 0x0a  ; EOL
         mov BYTE [ecx + edx - 1], 0x00
         je .null_terminated
+        push eax
         call clear_stdin
+        pop eax
         jmp .null_terminated
       .lower:
         mov BYTE [ecx+eax-1], 0x00    ; \n => \0

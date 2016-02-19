@@ -87,6 +87,7 @@ section .text
         ret
 
     read_int:
+    read_uint:
         push ebp
         mov ebp, esp
 

@@ -5,45 +5,13 @@ sys_exit    equ   1
 sys_read    equ   3
 sys_write   equ   4 
 
-%ifndef BASIC_IO
-  %define BASIC_IO
+%ifndef BASM_IO
+  %define BASM_IO
+
+%include "basm_cast.asm"
 section .bss
     dummy resb 1
 section .text
-    strlen:
-        xor eax, eax
-      .do:
-        mov dl, BYTE [ecx+eax]
-        inc eax
-        test dl, dl
-        jnz .do
-        dec eax
-        ret
-
-    atoi:
-        xor esi, esi
-        xor eax, eax
-        xor edx, edx
-        mov dl, BYTE [ecx]
-        cmp dl, 0x2d    ; -
-        jne .read
-        inc ecx
-        inc esi         ; negative
-      .read:
-        mov dl, BYTE [ecx]
-        inc ecx
-        test dl, dl
-        jz .end
-        imul eax, 10
-        sub dl, 0x30
-        add eax, edx
-        jmp .read
-      .end:
-        test esi, esi
-        jz .positive
-        imul eax, -1
-      .positive:
-        ret
 
     print_string:
         mov edx, -1
@@ -126,7 +94,7 @@ section .text
         mov ecx, esp
         mov edx, 12
         call read_string
-        call atoi
+        call strtoi
 
         leave
         ret

@@ -30,12 +30,12 @@ section .text
     print_uint:
         push ebp
         mov ebp, esp
-        sub esp, 12   ; 2^32, 10 digits + \0
         push ebx      ; callee save
-        mov BYTE [esp+15], 0x0
+        sub esp, 12   ; 2^32, 10 digits + \0
+        mov BYTE [esp+11], 0x0
         mov eax, ecx
         mov ebx, 0x0a
-        mov ecx, 0x0f
+        mov ecx, 0x0b
       .loop:
         dec ecx
         xor edx, edx

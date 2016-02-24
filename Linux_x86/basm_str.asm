@@ -4,9 +4,11 @@
 section .text
 
     strcopy:
-        ; ecx source
-        ; edx destination
-        ; eax size (if 0 -> length of source)
+        ; Copies a string and \0-terminates it
+        ;
+        ; ecx -> address of source
+        ; edx -> address of destination
+        ; eax -> size (if 0 -> length of source)
         mov esi, ecx
         mov edi, edx
         test eax, eax
@@ -22,6 +24,9 @@ section .text
         ret
 
     strlen:
+        ; Counts chars until \0
+        ;
+        ; ecx -> address of buffer
         xor eax, eax
       .do:
         mov dl, BYTE [ecx+eax]

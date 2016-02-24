@@ -14,13 +14,16 @@ section .bss
 section .text
 
     print_string:
+        ; prints a string to the standard output
+        ;
+        ; ecx -> address of buffer
         mov edx, -1
       .loop: 
         inc edx
         cmp BYTE [ecx+edx], 0
         jne .loop
 
-        push ebx    ; callee save
+        push ebx                    ; callee save
         mov eax, sys_write
         mov ebx, stdout
         int 0x80
@@ -28,10 +31,13 @@ section .text
         ret
 
     print_uint:
+        ; prints an unsigned integer to the standard output
+        ;
+        ; ecx -> unsigned integer
         push ebp
         mov ebp, esp
-        push ebx      ; callee save
-        sub esp, 12   ; 2^32, 10 digits + \0
+        push ebx                    ; callee save
+        sub esp, 12                 ; 2^32, 10 digits + \0
         mov BYTE [esp+11], 0x0
         mov eax, ecx
         mov ebx, 0x0a
@@ -52,13 +58,16 @@ section .text
         ret
 
     print_int:
+        ; prints an integer to the standard output
+        ;
+        ; ecx -> signed integer
         test ecx, ecx
         jns .pos
         push ecx
-        push 0x2d       ; ASCII: -
+        push 0x2d                   ; ASCII: -
         mov ecx, esp
         call print_string
-        add esp, 4      ; remove 0x2d from stack
+        add esp, 4                  ; remove 0x2d from stack
         pop ecx
         xor ecx, 0xffffffff
         inc ecx
@@ -67,11 +76,15 @@ section .text
         ret
 
     read_string:
+        ; reads a string from the standard input to 'buffer'
+        ;
+        ; ecx -> address of buffer
+        ; edx -> size of buffer
         push ebx
         mov eax, sys_read
         mov ebx, stdin
         int 0x80
-        cmp eax, edx      ; compares the size of input with the size of the buffer
+        cmp eax, edx                ; compares the size of input with the size of the buffer
         jl  .lower
         cmp BYTE [ecx + edx - 1], 0x0a  ; EOL
         mov BYTE [ecx + edx - 1], 0x00
@@ -81,17 +94,18 @@ section .text
         pop eax
         jmp .null_terminated
       .lower:
-        mov BYTE [ecx+eax-1], 0x00    ; \n => \0
+        mov BYTE [ecx+eax-1], 0x00  ; \n => \0
       .null_terminated:
         pop ebx
         ret
 
     read_int:
     read_uint:
+        ; reads an integer from the standard input and returns it
         push ebp
         mov ebp, esp
 
-        sub esp, 12   ; 2^32, 10 digits + \0
+        sub esp, 12                 ; 2^32, 10 digits + \0
         mov ecx, esp
         mov edx, 12
         call read_string
@@ -101,6 +115,7 @@ section .text
         ret
 
     clear_stdin:
+        ; reads from stdin until \n
         mov eax, sys_read
         mov ebx, stdin
         mov ecx, dummy

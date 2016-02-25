@@ -34,7 +34,7 @@ section .text
         ret
 
     write_uint:
-        ; writes an unsigned integer to the file descriptor edx
+        ; writes an unsigned integer as ASCII to the file descriptor edx
         ;
         ; ecx -> unsigned integer
         ; edx -> file descriptor
@@ -53,7 +53,7 @@ section .text
         ret
 
     write_int:
-        ; write an integer to the file descriptor edx
+        ; write an integer as ASCII to the file descriptor edx
         ;
         ; ecx -> signed integer
         ; edx -> file descriptor

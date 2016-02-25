@@ -6,12 +6,21 @@ section .text
 %include "basm_str.asm"
 
     itostr:
+        ; Converts an integer to a string
+        ; if the buffer is to small not the whole number is written
+        ;
         ; ecx -> int
         ; edx -> address of buffer
         ; eax -> size of buffer
-        ; TODO
-
-
+        test ecx, ecx               ; goto .pos if ecx >= 0
+        jns .pos                    ;
+        mov BYTE [edx], 0x2d        ; if the number is negative, a '-' is put
+        inc edx                     ; at the beginning of the buffer. Then the
+        dec eax                     ; number is made positive so that uitostr
+        xor ecx, 0xffffffff         ; can be used.
+        inc ecx
+      .pos:
+        call uitostr
 
         ret
 

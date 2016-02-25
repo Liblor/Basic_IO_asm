@@ -38,19 +38,10 @@ section .text
         mov ebp, esp
         push ebx                    ; callee save
         sub esp, 12                 ; 2^32, 10 digits + \0
-        mov BYTE [esp+11], 0x0
-        mov eax, ecx
-        mov ebx, 0x0a
-        mov ecx, 0x0b
-      .loop:
-        dec ecx
-        xor edx, edx
-        div ebx
-        add dl, 0x30
-        mov BYTE [esp+ecx], dl
-        test eax, eax
-        jne .loop
-        lea ecx, [esp+ecx]
+        mov edx, esp
+        mov eax, 12
+        call uitostr
+        mov ecx, esp
         call print_string
         add esp, 12
         pop ebx

@@ -57,7 +57,19 @@ section .text
         ;
         ; ecx -> signed integer
         ; edx -> file descriptor
-        ; TODO
+        push ebp
+        mov ebp, esp
+        push edx
+        sub esp, 12                 ; 2^32, 10 digits + \0
+        mov edx, esp
+        mov eax, 12
+        call itostr
+        mov ecx, esp
+        mov edx, DWORD [esp+12]
+        call write_string
+        add esp, 16
+        leave
+        ret
 
     print_string:
         ; prints a string to the standard output
@@ -79,20 +91,8 @@ section .text
         ; prints an integer to the standard output
         ;
         ; ecx -> signed integer
-        
-        ; TODO <--------------------------- use itostr
-        test ecx, ecx
-        jns .pos
-        push ecx
-        push 0x2d                   ; ASCII: -
-        mov ecx, esp
-        call print_string
-        add esp, 4                  ; remove 0x2d from stack
-        pop ecx
-        xor ecx, 0xffffffff
-        inc ecx
-      .pos:
-        call print_uint
+        mov edx, stdout
+        call write_int
         ret
 
     read_string:

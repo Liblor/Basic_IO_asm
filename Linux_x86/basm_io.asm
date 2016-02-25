@@ -36,7 +36,6 @@ section .text
         ; ecx -> unsigned integer
         push ebp
         mov ebp, esp
-        push ebx                    ; callee save
         sub esp, 12                 ; 2^32, 10 digits + \0
         mov edx, esp
         mov eax, 12
@@ -44,7 +43,6 @@ section .text
         mov ecx, esp
         call print_string
         add esp, 12
-        pop ebx
         leave
         ret
 

@@ -13,43 +13,74 @@ section .bss
     dummy resb 1
 section .text
 
-    print_string:
-        ; prints a string to the standard output
+    write_string:
+        ; writes a string to the file descriptor edx
         ;
         ; ecx -> address of buffer
-        mov edx, -1
+        ; edx -> file descriptor
+        mov esi, -1
       .loop: 
-        inc edx
-        cmp BYTE [ecx+edx], 0
+        inc esi
+        cmp BYTE [ecx+esi], 0
         jne .loop
 
         push ebx                    ; callee save
         mov eax, sys_write
-        mov ebx, stdout
+        mov ebx, edx                ; fd
+                                    ; buf
+        mov edx, esi                ; nbytes
         int 0x80
         pop ebx
+        ret
+
+    write_uint:
+        ; writes an unsigned integer to the file descriptor edx
+        ;
+        ; ecx -> unsigned integer
+        ; edx -> file descriptor
+        push ebp
+        mov ebp, esp
+        push edx
+        sub esp, 12                 ; 2^32, 10 digits + \0
+        mov edx, esp
+        mov eax, 12
+        call uitostr
+        mov ecx, esp
+        mov edx, DWORD [esp+12]
+        call write_string
+        add esp, 16
+        leave
+        ret
+
+    write_int:
+        ; write an integer to the file descriptor edx
+        ;
+        ; ecx -> signed integer
+        ; edx -> file descriptor
+        ; TODO
+
+    print_string:
+        ; prints a string to the standard output
+        ;
+        ; ecx -> address of buffer
+        mov edx, stdout
+        call write_string
         ret
 
     print_uint:
         ; prints an unsigned integer to the standard output
         ;
         ; ecx -> unsigned integer
-        push ebp
-        mov ebp, esp
-        sub esp, 12                 ; 2^32, 10 digits + \0
-        mov edx, esp
-        mov eax, 12
-        call uitostr
-        mov ecx, esp
-        call print_string
-        add esp, 12
-        leave
+        mov edx, stdout
+        call write_uint
         ret
 
     print_int:
         ; prints an integer to the standard output
         ;
         ; ecx -> signed integer
+        
+        ; TODO <--------------------------- use itostr
         test ecx, ecx
         jns .pos
         push ecx

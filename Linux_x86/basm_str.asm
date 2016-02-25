@@ -19,8 +19,7 @@ section .text
         mov ecx, eax
         cld
         rep movsb
-        dec eax
-        mov BYTE [edi+eax], 0
+        mov BYTE [edi-1], 0
         ret
 
     strlen:
